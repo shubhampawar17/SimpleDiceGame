@@ -19,9 +19,11 @@ namespace SimpleDiceGame.model
             TotalScore = 0;
             TurnScore = 0;
         }
+
         public int RollDie()
         {
             return random.Next(1, 7);
         }
     }
 }
+

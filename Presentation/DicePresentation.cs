@@ -10,6 +10,7 @@ namespace SimpleDiceGame.Presentation
 {
     internal class DicePresentation
     {
+
         private DiceManager manager;
         private string playerName;
 
@@ -23,22 +24,25 @@ namespace SimpleDiceGame.Presentation
         {
             Console.WriteLine("Enter your name:");
             playerName = Console.ReadLine();
-            Console.WriteLine($"Welcome {playerName} to the Dice Game !!");
+            Console.WriteLine($"Welcome {playerName} to the Dice Game !!\n");
         }
 
         public void RunGame()
         {
-            while (!manager.IsGameWon())
+            bool isGameWon = false;
+
+            while (!isGameWon)  // Keep running until game is won
             {
-                PlayTurn();
+                isGameWon = PlayTurn();
             }
-            DisplayWinMessage(manager.GetTotalScore());
+
+            DisplayWinMessage(manager.GetTotalScore()); // Display win message only when the game is won
         }
 
         public void DisplayCurrentScores(int turnScore)
         {
             // Now we only display the current (turn) score
-            Console.WriteLine($"Current Score: {turnScore}");
+            Console.WriteLine($"Current Score: {turnScore}\n");
         }
 
         public string GetUserChoice()
@@ -64,7 +68,10 @@ namespace SimpleDiceGame.Presentation
 
         public void DisplayWinMessage(int totalScore)
         {
-            Console.WriteLine($"Congrats! You reached {totalScore} and won!");
+            if (totalScore >= 20)
+            {
+                Console.WriteLine($"Congrats! You reached {totalScore} and won!");
+            }
         }
 
         public void DisplayInvalidInputMessage()
@@ -72,7 +79,7 @@ namespace SimpleDiceGame.Presentation
             Console.WriteLine("Invalid input! Please enter 'r' to roll or 'h' to hold.");
         }
 
-        private void PlayTurn()
+        private bool PlayTurn()
         {
             bool turnActive = true;
 
@@ -83,26 +90,34 @@ namespace SimpleDiceGame.Presentation
                 if (choice == "r")
                 {
                     int roll = manager.Roll();
-                    DisplayRollResult(roll);  // Print the roll result first
-                    DisplayCurrentScores(manager.GetTurnScore()); // Then print the current turn score
+                    DisplayRollResult(roll);
+                    DisplayCurrentScores(manager.GetTurnScore());
 
                     if (roll == 1)
                     {
-                        turnActive = false; // End turn if a 1 is rolled
+                        turnActive = false;  // End turn if 1 is rolled
                     }
                 }
                 else if (choice == "h")
                 {
-                    manager.Hold();
-                    DisplayWinMessage(manager.GetTotalScore()); // Show total score after holding
-                    turnActive = false;  // End this turn
+                    bool isGameWon = manager.Hold();  // Check if the game is won after holding
+                    DisplayHoldMessage(manager.GetTotalScore());
+
+                    if (isGameWon)
+                    {
+                        return true;  // If the game is won, stop further turns
+                    }
+
+                    turnActive = false;  // End turn after holding
                 }
                 else
                 {
                     DisplayInvalidInputMessage();
                 }
             }
+
+            return false;  // Return false if game is not won yet
         }
+
     }
-    
 }

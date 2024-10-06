@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,12 +10,14 @@ namespace SimpleDiceGame.Controllers
 {
     internal class DiceManager
     {
+
         private Dice dice;
 
         public DiceManager()
         {
             dice = new Dice();
         }
+
         public int Roll()
         {
             int roll = dice.RollDie(); // Roll the die
@@ -28,23 +31,24 @@ namespace SimpleDiceGame.Controllers
             }
             return roll; // Return the rolled number
         }
-        public void Hold()
+
+        public bool Hold()
         {
-            dice.TotalScore = dice.TurnScore; // Only set TotalScore to the current TurnScore
+            // Add TurnScore to TotalScore, maintaining the previous score
+            dice.TotalScore += dice.TurnScore;
             dice.TurnScore = 0; // Reset TurnScore after holding
+
+            return dice.TotalScore >= 20; // Return if the player won the game
         }
-        public bool IsGameWon()
-        {
-            return dice.TotalScore >= 20;
-        }
+
         public int GetTotalScore()
         {
             return dice.TotalScore;
         }
+
         public int GetTurnScore()
         {
             return dice.TurnScore;
         }
     }
 }
-
